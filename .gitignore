@@ -1,1 +1,4 @@
 /venv
+/Lounge-Valet/.env
+/Monitoring-Valet/.env
+/Report/.env
