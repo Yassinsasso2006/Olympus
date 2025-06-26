@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()  # loads .env file
-TOKEN = os.getenv("DISCORD_TOKEN")
+TOKEN = os.getenv("TOKEN")
 
 intents = discord.Intents.default()
 intents.message_content = True  # needed for reading messages
