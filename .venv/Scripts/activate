@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="E:\Github\Writer's Lounge\Master-Bot-System\.venv"
+VIRTUAL_ENV="e:\Github\Writer's Lounge\.venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
