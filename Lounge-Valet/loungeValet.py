@@ -89,5 +89,54 @@ async def verify_user(interaction: discord.Interaction, member: discord.Member):
     except Exception as e:
         await interaction.response.send_message(f"⚠️ Something went wrong: {e}", ephemeral=True)
 
+
+
+
+# Slash command: /unverify @member
+@app_commands.checks.has_role("Moderator")
+@tree.command(name="unverify", description="Remove verified roles and reassign 'Unverified' role.")
+@app_commands.describe(member="The member to unverify")
+async def unverify_user(interaction: discord.Interaction, member: discord.Member):
+    guild = interaction.guild
+
+    if not interaction.user.guild_permissions.manage_roles:
+        await interaction.response.send_message("❌ You don't have permission to unverify members.", ephemeral=True)
+        return
+
+    unverified_role = guild.get_role(UNVERIFIED_ROLE_NAME)
+    roles_to_remove = [guild.get_role(role_id) for role_id in ROLES_TO_ADD]
+
+    if unverified_role is None or any(r is None for r in roles_to_remove):
+        await interaction.response.send_message("⚠️ One or more roles were not found. Please check role IDs.", ephemeral=True)
+        return
+
+    try:
+        await member.remove_roles(*roles_to_remove)
+        await member.add_roles(unverified_role)
+
+        await interaction.response.send_message(
+            f"❌ {member.mention} has been unverified and their roles were removed."
+        )
+
+        log_channel = guild.get_channel(MOD_LOG_CHANNEL_ID)
+        if log_channel:
+            await log_channel.send(
+                f"🛑 {interaction.user.mention} unverified {member.mention} using `/unverify`."
+            )
+
+        await interaction.channel.send(
+            f"🔁 {member.mention} has been unverified by {interaction.user.mention}."
+        )
+
+    except discord.Forbidden:
+        await interaction.response.send_message("❌ I don’t have permission to manage those roles.", ephemeral=True)
+    except Exception as e:
+        await interaction.response.send_message(f"⚠️ Something went wrong: {e}", ephemeral=True)
+
+
+
+
+
+
 # Run the bot
 bot.run(TOKEN)
