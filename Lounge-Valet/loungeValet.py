@@ -81,7 +81,7 @@ async def verify_user(interaction: discord.Interaction, member: discord.Member):
             )
 
         await interaction.channel.send(
-            f"🎉 Welcome {member.mention}! You’ve been verified by {interaction.user.mention}."
+            f"Congratulations, you are now fully verified {member.mention}!  Please head over to <id:customize> and collect your roles. Be sure you have followed the ⁠Server Guide to fulfill your journey of initiation into the Lounge! Now, sit back relax and enjoy! ❤️."
         )
 
     except discord.Forbidden:
