@@ -45,11 +45,24 @@ async def on_ready():
         print(f"❌ Failed to sync slash commands: {e}")
 
 # Slash command: /verify @member
-@app_commands.checks.has_role(1073396088603693167)
+
 @tree.command(name="verify", description="Verify a user by removing 'Unverified' and adding standard roles.")
 @app_commands.describe(member="The member to verify")
 async def verify_user(interaction: discord.Interaction, member: discord.Member):
     guild = interaction.guild
+
+    required_role = interaction.guild.get_role(1073396088603693167)  # Moderator role
+
+    if required_role not in interaction.user.roles:
+        await interaction.response.send_message("❌ You must be a moderator to use this command.", ephemeral=True)
+
+        # ✅ Log the failed attempt
+        log_channel = interaction.guild.get_channel(MOD_LOG_CHANNEL_ID)
+        if log_channel:
+            await log_channel.send(
+                f"❌ Unauthorized attempt: {interaction.user.mention} (ID: {interaction.user.id}) tried to use `/verify` on {member.display_name}, but lacks the required moderator role. <@&1073396088603693167> be careful!"
+            )
+        return
 
     if not interaction.user.guild_permissions.manage_roles:
         await interaction.response.send_message("❌ You don't have permission to verify members.", ephemeral=True)
