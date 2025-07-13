@@ -45,7 +45,7 @@ async def on_ready():
         print(f"❌ Failed to sync slash commands: {e}")
 
 # Slash command: /verify @member
-@app_commands.checks.has_role(1061738852399714445)
+@app_commands.checks.has_role(1073396088603693167)
 @tree.command(name="verify", description="Verify a user by removing 'Unverified' and adding standard roles.")
 @app_commands.describe(member="The member to verify")
 async def verify_user(interaction: discord.Interaction, member: discord.Member):
@@ -55,45 +55,58 @@ async def verify_user(interaction: discord.Interaction, member: discord.Member):
         await interaction.response.send_message("❌ You don't have permission to verify members.", ephemeral=True)
         return
 
+    await interaction.response.defer(ephemeral=False)
+
     unverified_role = guild.get_role(UNVERIFIED_ROLE_NAME)
     roles_to_add = [guild.get_role(role_id) for role_id in ROLES_TO_ADD]
 
     if unverified_role is None or any(r is None for r in roles_to_add):
-        await interaction.response.send_message("⚠️ One or more roles were not found. Please check role IDs.", ephemeral=True)
+        await interaction.followup.send("⚠️ One or more roles were not found. Please check role IDs.")
         return
 
     if unverified_role not in member.roles:
-        await interaction.response.send_message(f"{member.mention} is already verified or missing the 'Unverified' role.", ephemeral=True)
+        await interaction.followup.send(f"{member.mention} is already verified or missing the 'Unverified' role.")
         return
 
     try:
         await member.remove_roles(unverified_role)
         await member.add_roles(*roles_to_add)
 
-        await interaction.response.send_message(
-            f"✅ {member.mention} has been verified and given roles: {', '.join(role.name for role in roles_to_add)}"
-        )
-
         log_channel = guild.get_channel(MOD_LOG_CHANNEL_ID)
         if log_channel:
             await log_channel.send(
-                f"✅ {interaction.user.mention} verified {member.mention} using `/verify`."
+                f"✅ {member.mention} has been verified and given roles: {', '.join(role.name for role in roles_to_add)}"
+            )
+            await log_channel.send(
+                f"🛠️ {interaction.user.display_name} verified {member.mention} using `/verify`."
             )
 
-        await interaction.channel.send(
-            f"Congratulations, you are now fully verified {member.mention}!  Please head over to <id:customize> and collect your roles. Be sure you have followed the ⁠Server Guide to fulfill your journey of initiation into the Lounge! Now, sit back relax and enjoy! ❤️."
+
+        # ✅ REQUIRED: send a follow-up message to complete the interaction
+        await interaction.followup.send(
+        f"🎉 Congratulations, {member.mention}! Please head over to <id:customize> and collect your roles. Be sure you have followed the <id:guide> to fulfill your journey of initiation into the Lounge!"
+            "Now, sit back, relax and enjoy! ❤️"
         )
 
     except discord.Forbidden:
-        await interaction.response.send_message("❌ I don’t have permission to manage those roles.", ephemeral=True)
+        await interaction.followup.send(
+            "❌ I don’t have permission to manage those roles.", ephemeral=True
+        )
     except Exception as e:
-        await interaction.response.send_message(f"⚠️ Something went wrong: {e}", ephemeral=True)
+        await interaction.followup.send(
+            f"⚠️ Something went wrong: {e}", ephemeral=True
+        )
+
+    except discord.Forbidden:
+        await interaction.followup.send("❌ I don’t have permission to manage those roles.")
+    except Exception as e:
+        await interaction.followup.send(f"⚠️ Something went wrong: {e}")
 
 
 
 
 # Slash command: /unverify @member
-@app_commands.checks.has_role("Moderator")
+@app_commands.checks.has_role(1073396088603693167)  #The Council of Elders role ID
 @tree.command(name="unverify", description="Remove verified roles and reassign 'Unverified' role.")
 @app_commands.describe(member="The member to unverify")
 async def unverify_user(interaction: discord.Interaction, member: discord.Member):
@@ -103,35 +116,35 @@ async def unverify_user(interaction: discord.Interaction, member: discord.Member
         await interaction.response.send_message("❌ You don't have permission to unverify members.", ephemeral=True)
         return
 
+    await interaction.response.defer(ephemeral=False)
+
     unverified_role = guild.get_role(UNVERIFIED_ROLE_NAME)
     roles_to_remove = [guild.get_role(role_id) for role_id in ROLES_TO_ADD]
 
     if unverified_role is None or any(r is None for r in roles_to_remove):
-        await interaction.response.send_message("⚠️ One or more roles were not found. Please check role IDs.", ephemeral=True)
+        await interaction.followup.send("⚠️ One or more roles were not found. Please check role IDs.")
         return
 
     try:
         await member.remove_roles(*roles_to_remove)
         await member.add_roles(unverified_role)
 
-        await interaction.response.send_message(
+        await interaction.followup.send(
             f"❌ {member.mention} has been unverified and their roles were removed."
         )
 
         log_channel = guild.get_channel(MOD_LOG_CHANNEL_ID)
         if log_channel:
             await log_channel.send(
-                f"🛑 {interaction.user.mention} unverified {member.mention} using `/unverify`."
+                f"🛑 {interaction.user.display_name} unverified {member.mention} using `/unverify`."
             )
+            
 
-        await interaction.channel.send(
-            f"🔁 {member.mention} has been unverified by {interaction.user.mention}."
-        )
 
     except discord.Forbidden:
-        await interaction.response.send_message("❌ I don’t have permission to manage those roles.", ephemeral=True)
+        await interaction.followup.send("❌ I don’t have permission to manage those roles.")
     except Exception as e:
-        await interaction.response.send_message(f"⚠️ Something went wrong: {e}", ephemeral=True)
+        await interaction.followup.send(f"⚠️ Something went wrong: {e}")
 
 
 
