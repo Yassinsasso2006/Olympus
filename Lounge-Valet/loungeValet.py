@@ -20,19 +20,26 @@ tree = bot.tree  # slash command handler
 
 # Role configuration
 # Variable intialization
-UNVERIFIED_ROLE_NAME = 1059289964124323880
+#UNVERIFIED_ROLE_NAME = 1059289964124323880
+#ROLES_TO_ADD = [
+#    1059289967827894333, #Verified
+#    1064171885081919518, #Peasant of Prose(Lvl. 1)
+#    1077367546740736161, #《──────Lounge ID──────》
+#    1077367715607609415, #《──────Writing Badge──────》
+#    1077367888542961675, #《──────Spy Database──────》
+#    1077368081506119680, #《──────Quests──────》
+#    1077368229376307252, #《────Summoning Spells────》
+#    1077368412524785835 #《──────Comm System──────》
+#]
+
 ROLES_TO_ADD = [
-    1059289967827894333, #Verified
-    1064171885081919518, #Peasant of Prose(Lvl. 1)
-    1077367546740736161, #《──────Lounge ID──────》
-    1077367715607609415, #《──────Writing Badge──────》
-    1077367888542961675, #《──────Spy Database──────》
-    1077368081506119680, #《──────Quests──────》
-    1077368229376307252, #《────Summoning Spells────》
-    1077368412524785835 #《──────Comm System──────》
+    1393743892867715233,
+    1393743931082280980,
+    1393743964892303361,
+    1393744003572305931
 ]
 MOD_LOG_CHANNEL_ID = 1393736874069327963
-
+UNVERIFIED_ROLE_NAME = 1393746160396664905
 
 
 @bot.event
@@ -45,7 +52,7 @@ async def on_ready():
         print(f"❌ Failed to sync slash commands: {e}")
 
 # Slash command: /verify @member
-@app_commands.checks.has_role("Moderator")
+@app_commands.checks.has_role(1061738852399714445)
 @tree.command(name="verify", description="Verify a user by removing 'Unverified' and adding standard roles.")
 @app_commands.describe(member="The member to verify")
 async def verify_user(interaction: discord.Interaction, member: discord.Member):
