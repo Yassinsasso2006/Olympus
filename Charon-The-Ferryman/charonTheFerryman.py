@@ -3,6 +3,10 @@ from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
 import os
+import random
+import signal #This is used to handle graceful shutdowns
+import sys #This too
+import asyncio  # Import asyncio for async operations
 
 # Load bot token from .env
 load_dotenv()
@@ -16,6 +20,15 @@ intents.members = True
 
 # Set up bot
 bot = commands.Bot(command_prefix="!", intents=intents)
+
+# Graceful shutdown function
+async def shutdown():
+    print("🔴 Shutting down gracefully...")
+    await bot.change_presence(status=discord.Status.offline)
+    await bot.close()
+    print("✅ Shutdown complete.")
+
+
 tree = bot.tree  # slash command handler
 
 # Role configuration
@@ -37,6 +50,11 @@ MOD_LOG_CHANNEL_ID = 1393736874069327963
 
 @bot.event
 async def on_ready():
+    statuses = ["Verifying souls", "Guiding spirits", "Ferrying users"]
+    await bot.change_presence(activity=discord.Game(random.choice(statuses)))
+    channel = bot.get_channel(1077299662526107808)
+    if channel:
+        await channel.send("🔧 Bot is now online and ready.")
     print(f"✅ Bot is online as {bot.user}")
     try:
         synced = await tree.sync()
@@ -44,8 +62,22 @@ async def on_ready():
     except Exception as e:
         print(f"❌ Failed to sync slash commands: {e}")
 
-# Slash command: /verify @member
 
+# Handle graceful shutdown on Ctrl+C or termination
+def setup_shutdown_handlers():
+    loop = asyncio.get_event_loop()
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        try:
+            loop.add_signal_handler(sig, lambda: asyncio.create_task(shutdown()))
+        except NotImplementedError:
+            # Windows fallback: signal only works with SIGINT
+            if sig == signal.SIGINT:
+                signal.signal(signal.SIGINT, lambda sig, frame: asyncio.create_task(shutdown()))
+
+setup_shutdown_handlers()
+
+
+# Slash command: /verify @member
 @tree.command(name="verify", description="Verify a user by removing 'Unverified' and adding standard roles.")
 @app_commands.describe(member="The member to verify")
 async def verify_user(interaction: discord.Interaction, member: discord.Member):
@@ -97,8 +129,7 @@ async def verify_user(interaction: discord.Interaction, member: discord.Member):
 
         # ✅ REQUIRED: send a follow-up message to complete the interaction
         await interaction.followup.send(
-        f"🎉 Congratulations, {member.mention}! Please head over to <id:customize> and collect your roles. Be sure you have followed the <id:guide> to fulfill your journey of initiation into the Lounge!"
-            "Now, sit back, relax and enjoy! ❤️"
+        f"🎉 Congratulations, {member.mention}! Please head over to <id:customize> and collect your roles. Be sure you have followed the <id:guide> to fulfill your journey of initiation into the Lounge! Now, sit back, relax and enjoy! ❤️"
         )
 
     except discord.Forbidden:
@@ -159,10 +190,6 @@ async def unverify_user(interaction: discord.Interaction, member: discord.Member
     except Exception as e:
         await interaction.followup.send(f"⚠️ Something went wrong: {e}")
 
-
-
-
-
-
 # Run the bot
 bot.run(TOKEN)
+
