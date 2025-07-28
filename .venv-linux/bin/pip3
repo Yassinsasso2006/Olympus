@@ -1,4 +1,4 @@
-#!/home/loremasters/Desktop/The-Writers-Lounge/Master-Bot-System/venv-linux/bin/python3
+#!/home/loremasters/Desktop/The-Writers-Lounge/Master-Bot-System/.venv-linux/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
