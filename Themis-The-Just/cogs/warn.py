@@ -4,18 +4,37 @@ import json
 from datetime import datetime, timezone
 import os
 from discord import app_commands
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils import isMod 
+from dotenv import load_dotenv
 
-DATA_FILE = "data/memberData.json"
-modLogChannelId = 0  # Figure out how to set this up with 2 different servers
+load_dotenv()
+
+MAIN_GUILD_ID = int(os.getenv("MAIN_GUILD_ID"))
+MAIN_LOG_CHANNEL_ID = int(os.getenv("MAIN_LOG_CHANNEL_ID"))
+
+MOD_GUILD_ID = int(os.getenv("MOD_GUILD_ID"))
+MOD_LOG_CHANNEL_ID = int(os.getenv("MOD_LOG_CHANNEL_ID"))
+
+log_channels = {
+    MAIN_GUILD_ID: MAIN_LOG_CHANNEL_ID,
+    MOD_GUILD_ID: MOD_LOG_CHANNEL_ID
+}
+
+
+
+DATA_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "memberData.json"))
+main_modLogChannelId = MAIN_LOG_CHANNEL_ID
+mod_modLogChannelId = MOD_LOG_CHANNEL_ID
 modRoleId = 1073396088603693167 # The Council of Elders role ID
 
 
 class Warn(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
     def _load_data(self):
+        os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
         if not os.path.exists(DATA_FILE):
             with open(DATA_FILE, 'w') as f:
                 json.dump({}, f)
@@ -36,29 +55,32 @@ class Warn(commands.Cog):
         reason: str = "No reason provided",
         message_link: str = None
         ):
-        data = self._load_data()
-        user_id = str(member.id)
-        unix_timestamp = int(datetime.now(timezone.utc).timestamp())
+        try:
+            await interaction.response.defer(ephemeral=True)
 
-        entry = {
-            "type": "warning",
-            "reason": reason,
-            "moderator": interaction.user.id,
-            "timestamp": unix_timestamp,
-            "message link": message_link
-        }
 
-        if user_id not in data:
-            data[user_id] = []
-        data[user_id].append(entry)
-        self._save_data(data)
+            data = self._load_data()
+            user_id = str(member.id)
+            unix_timestamp = int(datetime.now(timezone.utc).timestamp())
+            
+            entry = {
+                "type": "warning",
+                "reason": reason,
+                "moderator": interaction.user.id,
+                "timestamp": unix_timestamp,
+                "message link": message_link
+            }
 
-        await interaction.response.send_message(
-            f"✅ {member.mention} has been warned for: {reason}", ephemeral=True
-        )
+            if user_id not in data:
+                data[user_id] = []
+            data[user_id].append(entry)
+            self._save_data(data)
 
-        log_channel = self.bot.get_channel(modLogChannelId)
-        if log_channel:
+            await interaction.followup.send(
+                f"✅ {member.mention} has been warned for: {reason}", ephemeral=True
+            )
+
+            
             embed = discord.Embed(title="⚖️ Warning Logged", colour=discord.Color.orange())
             embed.add_field(name="Handled by", value=interaction.user.mention, inline=False)
             embed.add_field(name="Timestamp", value=f"<t:{unix_timestamp}:f>", inline=False)
@@ -70,8 +92,18 @@ class Warn(commands.Cog):
 
             embed.add_field(name="Reason", value=reason, inline=False)
             embed.set_footer(text="This warning has been logged by Themis.")
-            await log_channel.send(embed=embed)
-
+            
+            for guild_id, channel_id in log_channels.items():
+                log_channel = self.bot.get_channel(channel_id)
+                if log_channel:
+                    try:
+                        await log_channel.send(embed=embed)
+                    except Exception as e:
+                        print(f"Failed to send log to channel {channel_id}: {e}")
+        except Exception as e:
+            print(f"[ERROR] Exception in /warn command: {e}")
+            if not interaction.response.is_done():
+                await interaction.followup.send("⚠️ Something went wrong.", ephemeral=True)
 async def setup(bot):
     await bot.add_cog(Warn(bot))
     print("Warn cog loaded successfully.")
