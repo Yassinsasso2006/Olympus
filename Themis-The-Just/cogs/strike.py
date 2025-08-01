@@ -54,8 +54,28 @@ class Strike(commands.Cog):
         interaction: discord.Interaction,
         member: discord.Member,
         reason: str = "No reason provided",
-        message_link: str = None
+        message_link: str = None,
+        evidence1: discord.Attachment = None,
+        evidence2: discord.Attachment = None,
+        evidence3: discord.Attachment = None,
+        evidence4: discord.Attachment = None,
+        evidence5: discord.Attachment = None,
+        evidence6: discord.Attachment = None,
+        evidence7: discord.Attachment = None,
+        evidence8: discord.Attachment = None,
+        evidence9: discord.Attachment = None,
+        evidence10: discord.Attachment = None
     ):
+        
+
+        evidence_attachments = [
+        evidence1, evidence2, evidence3, evidence4, evidence5,
+        evidence6, evidence7, evidence8, evidence9, evidence10,
+    ]
+        
+        evidence_urls = [e.url for e in evidence_attachments if e is not None]
+
+        
         try:
 
             await interaction.response.defer(ephemeral=True)
@@ -69,7 +89,8 @@ class Strike(commands.Cog):
                 "reason": reason,
                 "moderator": interaction.user.id,
                 "timestamp": unix_timestamp,
-                "message link": message_link
+                "message link": message_link,
+                "evidence":evidence_urls
             }
 
             if user_id not in data:
@@ -92,6 +113,7 @@ class Strike(commands.Cog):
                 embed.add_field(name="Message Link", value=f"[Jump to message]({message_link})", inline=False)
 
             embed.add_field(name="Reason", value=reason, inline=False)
+            embed.add_field(name="Evidence", value="\n".join(evidence_urls) if evidence_urls else "No evidence provided", inline=False)
             embed.set_footer(text="This strike has been logged by Themis.")
 
             for guild_id, channel_id in log_channels.items():

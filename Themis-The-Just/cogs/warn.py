@@ -63,7 +63,7 @@ class Warn(commands.Cog):
         evidence7: discord.Attachment = None,
         evidence8: discord.Attachment = None,
         evidence9: discord.Attachment = None,
-        evidence10: discord.Attachment = None,
+        evidence10: discord.Attachment = None
         ):
 
         evidence_attachments = [
@@ -87,7 +87,7 @@ class Warn(commands.Cog):
                 "moderator": interaction.user.id,
                 "timestamp": unix_timestamp,
                 "message link": message_link,
-                "evidence":evidence_urls
+                "evidence": evidence_urls
             }
 
             if user_id not in data:
