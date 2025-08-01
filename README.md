@@ -36,7 +36,10 @@ source .venv-windows/source/activate
 ### On Linux
 source .venv-linux/bin/activate
 
-
+### Extras:
+- Use these commands to sync branch with main:
+git fetch origin
+git merge origin/main
 
 To do list:
 - Add a TLDR
