@@ -1,5 +1,4 @@
-/venv
-/Lounge-Valet/.env
-/Monitoring-Bot/.env
-/Strike-Handling-Bot/.env
-/Ticket-Bot/.env
+Charon-The-Ferryman/.env
+Argus-The-All-Seeing/.env
+Themis-The-Just/.env
+Hermes-The-Messenger/.env
