@@ -43,3 +43,5 @@ git merge origin/main
 
 To do list:
 - Add a TLDR
+- Themis DMs member about warn/strike
+- Themis has messages as evidence
