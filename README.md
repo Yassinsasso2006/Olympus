@@ -31,7 +31,7 @@ There are 2 different virtual enviroments, depending on which operating system y
 To run each bot you'll need the corresponding .env file.
 
 ### On Windows
-source .venv-windows/source/activate
+source .venv-windows/Scripts/activate
 
 ### On Linux
 source .venv-linux/bin/activate

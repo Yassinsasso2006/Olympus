@@ -62,7 +62,7 @@ class History(commands.Cog):
             )
 
             for entry in history_entries[-10:]: #Shows last 10 entries max, make sure this works
-                timestamp = f"<t{entry['timestamp']}:f>"
+                timestamp = f"<t:{entry['timestamp']}:f>"
                 modterator = f"<@{entry['moderator']}>"
                 reason = entry['reason']
                 entry_type = entry['type'].capitalize()
