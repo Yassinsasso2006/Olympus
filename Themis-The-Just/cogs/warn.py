@@ -6,7 +6,7 @@ import os
 from discord import app_commands
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-from utils import isMod 
+from utils.utils import isMod 
 from dotenv import load_dotenv
 
 load_dotenv()
