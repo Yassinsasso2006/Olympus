@@ -1,13 +1,14 @@
 import subprocess
 import sys
-import os
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent
+
 BOTS = {
-    "charon": "Charon-The-Ferryman/charonTheFerryman.py",
-    "argus": "Argus-The-All-Seeing/argusTheAllSeeing.py",
-    "themis": "Themis-The-Just/themisTheJust.py",
-    "hermes": "Hermes-The-Messenger/hermesTheMessenger.py",
+    "charon": ROOT/"Charon-The-Ferryman"/"charonTheFerryman.py",
+    "argus": ROOT/"Argus-The-All-Seeing"/"argusTheAllSeeing.py",
+    "themis": ROOT/"Themis-The-Just"/"themisTheJust.py",
+    "hermes": ROOT/"Hermes-The-Messenger"/"hermesTheMessenger.py",
 }
 
 def run_bot(name: str):
@@ -16,20 +17,20 @@ def run_bot(name: str):
         print(f"Available bots: {', '.join(BOTS.keys())}")
         sys.exit(1)
 
-    path = Path(BOTS[name])
+    path = BOTS[name]
     if not path.exists():
         print(f"⚠️ Bot file not found: {path}")
         sys.exit(1)
 
     print(f"⚡ Summoning {name.title()}...")
-    subprocess.run(["python", str(path)])
+    subprocess.run([sys.executable, str(path)], check=True)
 
 def run_all():
     print("⚡ Summoning the full Council of Olympus...")
     processes = []
     for name, path in BOTS.items():
         print(f"  ➤ Starting {name.title()}...")
-        proc = subprocess.Popen(["python", path])
+        proc = subprocess.Popen([sys.executable, str(path)])
         processes.append(proc)
 
     print("🕊️  All bots are running. Press Ctrl+C to dismiss the gods.")
@@ -41,15 +42,24 @@ def run_all():
         for proc in processes:
             proc.terminate()
 
-if __name__ == "__main__":
+def list_bots():
+    print("🏛️  The Pantheon of Olympus:")
+    for name, path in BOTS.items():
+        status = "✅" if path.exists() else "❌"
+        print(f"  {status} {name.title()} — {path.relative_to(ROOT)}")
+
+def main():
     if len(sys.argv) < 2:
-        print("Usage:")
-        print("  python run.py <botname>   — run a single bot")
-        print("  python run.py all         — run all bots")
-        sys.exit(0)
+        print("Usage: olympus [botname|all|list]")
+        sys.exit(1)
 
     target = sys.argv[1].lower()
     if target == "all":
         run_all()
+    elif target == "list":
+        list_bots()
     else:
         run_bot(target)
+
+if __name__ == "__main__":
+    main()

@@ -45,3 +45,6 @@ To do list:
 - Add a TLDR
 - Themis DMs member about warn/strike
 - Themis has messages as evidence
+
+Bugs so far:
+- Olympus command only works on linux. But also try to find a way to make it universal among computers
