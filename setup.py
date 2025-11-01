@@ -1,14 +1,12 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name="olympus",
     version="1.0.0",
-    packages=find_packages(),
-    py_modules=["run"],
+    py_modules=["run_windows"],
     entry_points={
         "console_scripts": [
-            "olympus=run:main",
+            "olympus=run_windows:main",
         ],
     },
-    python_requires=">=3.8",
 )

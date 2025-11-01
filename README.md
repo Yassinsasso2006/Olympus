@@ -47,4 +47,4 @@ To do list:
 - Themis has messages as evidence
 
 Bugs so far:
-- Olympus command only works on linux. But also try to find a way to make it universal among computers
+- Olympus command only works on linux. But also try to find a way to make it universal among computers. Wtf am I doing, I have midterms. I ain't free to waste time on this fucking code
