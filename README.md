@@ -23,7 +23,7 @@ Guide of the newly arrived, Charon ensures only the worthy cross into your serve
 #### 👁️ **Argus the All-Seeing Guardian**
 With a hundred virtual eyes, Argus never sleeps. He scans your realm for forbidden images, detects rising chaos with AI-powered threat assessment, and whispers to the gods (moderators) when his vigilance is needed—either across servers or through ephemeral messages.
 
-#### ***_Features:_***
+##### ***_Features:_***
 - [ ] `` 
     - Description:
     - Input: 
@@ -34,12 +34,12 @@ With a hundred virtual eyes, Argus never sleeps. He scans your realm for forbidd
     - Input: 
     - Output:
 
-#### ***_Notes:_***
+##### ***_Notes:_***
 
 #### ⚖️ **Themis The Embodiment of Justice**
 The goddess of order watches closely. Themis records every warning, strike, and infraction, building a tapestry of member behavior. Her scales remain balanced, her judgment fair, her memory long.
 
-#### ***_Features:_***
+##### ***_Features:_***
 - [ ] `/warn` 
     - Description:
     - Input: 
@@ -55,12 +55,12 @@ The goddess of order watches closely. Themis records every warning, strike, and 
     - Input: 
     - Output:
 
-#### ***_Notes:_***
+##### ***_Notes:_***
 
 #### ✉️ **Hermes The Messenger**
 Fleet-footed and endlessly adaptable, Hermes handles communication and support. He crafts intricate ticket systems for all needs—whether mortal disputes or divine tasks—and delivers messages with speed and style.
 
-#### ***_Features:_***
+##### ***_Features:_***
 - [ ] `` 
     - Description:
     - Input: 
@@ -71,7 +71,7 @@ Fleet-footed and endlessly adaptable, Hermes handles communication and support. 
     - Input: 
     - Output:
 
-#### ***_Notes:_***
+##### ***_Notes:_***
 
 
 
