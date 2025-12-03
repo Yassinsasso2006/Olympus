@@ -8,14 +8,14 @@ Guide of the newly arrived, Charon ensures only the worthy cross into your serve
 
 #### ***_Features:_***
 - [ ] `/verify` 
-    - Description:
-    - Input: 
-    - Output:
+    - Description: It takes an unverified memeber and verified them. How you ask? It takes away the unverified role and gives them the standard member roles.
+    - Input: `Member`
+    - Output: **Nothing**
 
 - [ ] `/unverify`
-    - Description:
-    - Input: 
-    - Output:
+    - Description: It takes a verified member and reveres the verfication process. It gives them the unverified role and gives them the standard member roles.
+    - Input: `Member`
+    - Output: **Nothing**
 
 #### ***_Notes:_***
 
@@ -40,12 +40,17 @@ With a hundred virtual eyes, Argus never sleeps. He scans your realm for forbidd
 The goddess of order watches closely. Themis records every warning, strike, and infraction, building a tapestry of member behavior. Her scales remain balanced, her judgment fair, her memory long.
 
 #### ***_Features:_***
-- [ ] `` 
+- [ ] `/warn` 
     - Description:
     - Input: 
     - Output:
 
-- [ ] ``
+- [ ] `/strike`
+    - Description:
+    - Input: 
+    - Output:
+
+- [ ] `/history`
     - Description:
     - Input: 
     - Output:
