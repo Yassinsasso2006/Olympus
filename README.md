@@ -6,7 +6,7 @@ A divine assembly of Discord bots, each inspired by the gods and guardians of Gr
 #### 🛶 **Charon the Ferryman of Souls**
 Guide of the newly arrived, Charon ensures only the worthy cross into your server. Handles verification with precision, assigning roles and filtering entry like the gatekeeper of the underworld.
 
-#### ***_Features:_***
+##### ***_Features:_***
 - [ ] `/verify` 
     - Description: It takes an unverified memeber and verified them. How you ask? It takes away the unverified role and gives them the standard member roles.
     - Input: `Member`
@@ -17,7 +17,7 @@ Guide of the newly arrived, Charon ensures only the worthy cross into your serve
     - Input: `Member`
     - Output: **Nothing**
 
-#### ***_Notes:_***
+##### ***_Notes:_***
 
 
 #### 👁️ **Argus the All-Seeing Guardian**
