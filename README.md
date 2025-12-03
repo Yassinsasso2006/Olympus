@@ -1,24 +1,73 @@
 # 🏛️ Olympus Master-Bot-System
-
 A divine assembly of Discord bots, each inspired by the gods and guardians of Greek mythology, built to serve the will of **The Council of Elders**. Olympus brings order, justice, and swift communication to your server through a modular, mythology-driven bot framework.
 
-### ⚔️ The Pantheon of Bots
+## ⚔️ The Pantheon of Bots
 
 #### 🛶 **Charon the Ferryman of Souls**
-
 Guide of the newly arrived, Charon ensures only the worthy cross into your server. Handles verification with precision, assigning roles and filtering entry like the gatekeeper of the underworld.
 
-#### 👁️ **Argus the All-Seeing Guardian** (WIP)
+#### ***_Features:_***
+- [ ] `/verify` 
+    - Description:
+    - Input: 
+    - Output:
 
+- [ ] `/unverify`
+    - Description:
+    - Input: 
+    - Output:
+
+#### ***_Notes:_***
+
+
+#### 👁️ **Argus the All-Seeing Guardian**
 With a hundred virtual eyes, Argus never sleeps. He scans your realm for forbidden images, detects rising chaos with AI-powered threat assessment, and whispers to the gods (moderators) when his vigilance is needed—either across servers or through ephemeral messages.
 
-#### ⚖️ **Themis The Embodiment of Justice**
+#### ***_Features:_***
+- [ ] `` 
+    - Description:
+    - Input: 
+    - Output:
 
+- [ ] ``
+    - Description:
+    - Input: 
+    - Output:
+
+#### ***_Notes:_***
+
+#### ⚖️ **Themis The Embodiment of Justice**
 The goddess of order watches closely. Themis records every warning, strike, and infraction, building a tapestry of member behavior. Her scales remain balanced, her judgment fair, her memory long.
 
-#### ✉️ **Hermes The Messenger** (WIP)
+#### ***_Features:_***
+- [ ] `` 
+    - Description:
+    - Input: 
+    - Output:
 
+- [ ] ``
+    - Description:
+    - Input: 
+    - Output:
+
+#### ***_Notes:_***
+
+#### ✉️ **Hermes The Messenger**
 Fleet-footed and endlessly adaptable, Hermes handles communication and support. He crafts intricate ticket systems for all needs—whether mortal disputes or divine tasks—and delivers messages with speed and style.
+
+#### ***_Features:_***
+- [ ] `` 
+    - Description:
+    - Input: 
+    - Output:
+
+- [ ] ``
+    - Description:
+    - Input: 
+    - Output:
+
+#### ***_Notes:_***
+
 
 
 
