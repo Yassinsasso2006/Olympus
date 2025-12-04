@@ -7,7 +7,7 @@ A divine assembly of Discord bots, each inspired by the gods and guardians of Gr
 Guide of the newly arrived, Charon ensures only the worthy cross into your server. Handles verification with precision, assigning roles and filtering entry like the gatekeeper of the underworld.
 
 ##### ***_Features:_***
-- [ ] `/verify` 
+- [ ] `/verify`
     - Description: It takes an unverified memeber and verified them. How you ask? It takes away the unverified role and gives them the standard member roles.
     - Input: `Member`
     - Output: **Nothing**
@@ -24,13 +24,16 @@ Guide of the newly arrived, Charon ensures only the worthy cross into your serve
 With a hundred virtual eyes, Argus never sleeps. He scans your realm for forbidden images, detects rising chaos with AI-powered threat assessment, and whispers to the gods (moderators) when his vigilance is needed—either across servers or through ephemeral messages.
 
 ##### ***_Features:_***
-- [ ] `` 
-    - Description:
-    - Input: 
-    - Output:
+- [ ] `/ping mod`
+    - Description: Any moderator pings that a member does, he gets prompted whether he wants to ping them silently or not.
+    - Trigger Event: When someone tags `@Moderator`
+    - Input: `Mod Team` (Different mod categories)
+    - Output: Sends a ping to a private channel alerting the mod team
+    - Notes:
+        - I can do something else, have the AI scan the chat and pick the most suitable mod team. If the AI fails to determine one, then tag them all. (Test run this before deploying)
 
-- [ ] ``
-    - Description:
+- [ ] `Monitors chat`
+    - Description: This just monitors the server chats and give each a `threat_level`. And once it passes a certain threshold then it tags the chat mods.
     - Input: 
     - Output:
 
@@ -61,12 +64,12 @@ The goddess of order watches closely. Themis records every warning, strike, and 
 Fleet-footed and endlessly adaptable, Hermes handles communication and support. He crafts intricate ticket systems for all needs—whether mortal disputes or divine tasks—and delivers messages with speed and style.
 
 ##### ***_Features:_***
-- [ ] `` 
-    - Description:
+- [ ] `Create Ticket` **Button** 
+    - Description: It's en embed, when clicked a prompt is given where they have to chose the category.
     - Input: 
     - Output:
 
-- [ ] ``
+- [ ] `Close Ticket` **Button**
     - Description:
     - Input: 
     - Output:
