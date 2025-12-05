@@ -7,12 +7,12 @@ A divine assembly of Discord bots, each inspired by the gods and guardians of Gr
 Guide of the newly arrived, Charon ensures only the worthy cross into your server. Handles verification with precision, assigning roles and filtering entry like the gatekeeper of the underworld.
 
 ##### ***_Features:_***
-- [ ] `/verify` 
+- [x] `/verify` 
     - Description: It takes an unverified memeber and verified them. How you ask? It takes away the unverified role and gives them the standard member roles.
     - Input: `Member`
     - Output: **Nothing**
 
-- [ ] `/unverify`
+- [x] `/unverify`
     - Description: It takes a verified member and reveres the verfication process. It gives them the unverified role and gives them the standard member roles.
     - Input: `Member`
     - Output: **Nothing**
