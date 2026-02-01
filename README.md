@@ -24,7 +24,7 @@ Guide of the newly arrived, Charon ensures only the worthy cross into your serve
 With a hundred virtual eyes, Argus never sleeps. He scans your realm for forbidden images, detects rising chaos with AI-powered threat assessment, and whispers to the gods (moderators) when his vigilance is needed—either across servers or through ephemeral messages.
 
 ##### ***_Features:_***
-- [ ] `/ping mod`
+- [ ] `/ping mod` ***[WIP]***
     - Description: Any moderator pings that a member does, he gets prompted whether he wants to ping them silently or not.
     - Trigger Event: When someone tags `@Moderator`
     - Input: `Mod Team` (Different mod categories)
@@ -32,7 +32,7 @@ With a hundred virtual eyes, Argus never sleeps. He scans your realm for forbidd
     - Notes:
         - I can do something else, have the AI scan the chat and pick the most suitable mod team. If the AI fails to determine one, then tag them all. (Test run this before deploying)
 
-- [ ] `Monitors chat`
+- [ ] `Monitors chat` ***[WIP]***
     - Description: This just monitors the server chats and give each a `threat_level`. And once it passes a certain threshold then it tags the chat mods.
     - Input: 
     - Output:
@@ -44,37 +44,37 @@ The goddess of order watches closely. Themis records every warning, strike, and 
 
 ##### ***_Features:_***
 - [ ] `/warn` 
-    - Description:
-    - Input: 
-    - Output:
+    - Description: Adds a record of the member into the warn table of the database in order to recall it whenever the mods please
+    - Input: `Member`, `Reason`, `Evidence (Screenshots)` & `Message link (Optional)`
+    - Output: A log will be sent, listing out what was recorded.
 
 - [ ] `/strike`
-    - Description:
-    - Input: 
-    - Output:
+    - Description: Adds a record of the member into the strike table of the database in order to recall it whenever the mods please
+    - Input: `Member`, `Reason`, `Evidence (Screenshots)` & `Message link (Optional)`
+    - Output: A log will be sent, listing out what was recorded.
 
 - [ ] `/history`
-    - Description:
-    - Input: 
-    - Output:
+    - Description: Pulls the entire record of a associated with a specific member so the mod team is able to look through it easier
+    - Input: `Member`
+    - Output: Entire history of the associated member that you can scroll through
 
 ##### ***_Notes:_***
 
-#### ✉️ **Hermes The Messenger**
+#### ✉️ **Hermes The Messenger** ***[WIP]***
 Fleet-footed and endlessly adaptable, Hermes handles communication and support. He crafts intricate ticket systems for all needs—whether mortal disputes or divine tasks—and delivers messages with speed and style.
 
 ##### ***_Features:_***
-- [ ] `Create Ticket` **Button** 
+- [ ] `Create Ticket` **Button** ***[WIP]***
     - Description: It's en embed, when clicked a prompt is given where they have to chose the category.
     - Input: 
     - Output:
 
-- [ ] `Close Ticket` **Button**
+- [ ] `Close Ticket` **Button** ***[WIP]***
     - Description:
     - Input: 
     - Output:
 
-    Ticket Categories:
+    Ticket Categories: ***[WIP]***
     - Scamming
     - Verfication
     - Report a member
@@ -116,4 +116,4 @@ To do list:
 - Themis has messages as evidence
 
 Bugs so far:
-- Olympus command only works on linux. But also try to find a way to make it universal among computers. Wtf am I doing, I have midterms. I ain't free to waste time on this fucking code
+- Olympus command only works on linux. But also try to find a way to make it universal among computers.
