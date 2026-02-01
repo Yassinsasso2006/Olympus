@@ -43,17 +43,17 @@ With a hundred virtual eyes, Argus never sleeps. He scans your realm for forbidd
 The goddess of order watches closely. Themis records every warning, strike, and infraction, building a tapestry of member behavior. Her scales remain balanced, her judgment fair, her memory long.
 
 ##### ***_Features:_***
-- [ ] `/warn` 
+- [x] `/warn` 
     - Description: Adds a record of the member into the warn table of the database in order to recall it whenever the mods please
     - Input: `Member`, `Reason`, `Evidence (Screenshots)` & `Message link (Optional)`
     - Output: A log will be sent, listing out what was recorded.
 
-- [ ] `/strike`
+- [x] `/strike`
     - Description: Adds a record of the member into the strike table of the database in order to recall it whenever the mods please
     - Input: `Member`, `Reason`, `Evidence (Screenshots)` & `Message link (Optional)`
     - Output: A log will be sent, listing out what was recorded.
 
-- [ ] `/history`
+- [x] `/history`
     - Description: Pulls the entire record of a associated with a specific member so the mod team is able to look through it easier
     - Input: `Member`
     - Output: Entire history of the associated member that you can scroll through
