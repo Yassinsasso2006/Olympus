@@ -64,18 +64,28 @@ async def on_ready():
 
 
 # Handle graceful shutdown on Ctrl+C or termination
-def setup_shutdown_handlers():
-    loop = asyncio.get_event_loop()
+async def setup_hook():
+    """Runs when the bot starts up and the event loop is ready."""
+    # Sync slash commands
+    try:
+        synced = await bot.tree.sync()
+        print(f"✅ Synced {len(synced)} slash command(s).")
+    except Exception as e:
+        print(f"❌ Failed to sync slash commands: {e}")
+
+    # Set up signal handlers for graceful shutdown
+    loop = asyncio.get_running_loop()
     for sig in (signal.SIGINT, signal.SIGTERM):
         try:
+            # Linux/Mac/Unix
             loop.add_signal_handler(sig, lambda: asyncio.create_task(shutdown()))
         except NotImplementedError:
-            # Windows fallback: signal only works with SIGINT
+            # Windows Fallback
             if sig == signal.SIGINT:
-                signal.signal(signal.SIGINT, lambda sig, frame: asyncio.create_task(shutdown()))
+                signal.signal(signal.SIGINT, lambda s, f: asyncio.create_task(shutdown()))
 
-setup_shutdown_handlers()
-
+# Assign the hook to the bot
+bot.setup_hook = setup_hook
 
 # Slash command: /verify @member
 @tree.command(name="verify", description="Verify a user by removing 'Unverified' and adding standard roles.")
