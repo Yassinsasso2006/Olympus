@@ -92,6 +92,14 @@ CREATE TABLE "public"."staff"(
     "archivedAt" TIMESTAMP(0) NULL -- Archives staff members (The "Hall of Heroes" logic)
 );
 
+-- Key-Value style table.
+CREATE TABLE IF NOT EXISTS "public"."settings" (
+    "settingKey" TEXT PRIMARY KEY, --The variable name that needs to be stored
+    "settingValue" TEXT NOT NULL,  --The variable's value
+    "description" TEXT, --A text description that explains this variable and it's value
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP --When was the last time this variable's value was updated
+);
+
 -- ==========================================
 -- 5. ATHENA (Quests & Favour)
 -- ==========================================
