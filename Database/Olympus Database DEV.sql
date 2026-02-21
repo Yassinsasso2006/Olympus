@@ -235,3 +235,16 @@ ALTER TABLE "athena"."questLogs" ADD CONSTRAINT "fk_quest_log_staff" FOREIGN KEY
 ALTER TABLE "athena"."questLogs" ADD CONSTRAINT "fk_quest_log_quest" FOREIGN KEY ("questID") REFERENCES "athena"."quests" ("id") ON DELETE RESTRICT;
 ALTER TABLE "hermes"."tickets" ADD CONSTRAINT "fk_ticket_creator" FOREIGN KEY ("creatorID") REFERENCES "public"."members" ("discordID") ON DELETE RESTRICT;
 ALTER TABLE "hermes"."feedback" ADD CONSTRAINT "fk_feedback_ticket" FOREIGN KEY ("ticketID") REFERENCES "hermes"."tickets" ("id") ON DELETE RESTRICT;
+
+-- ==========================================
+-- 10. INSERTING CONFIG DATA
+-- ==========================================
+-- Replace the '00000000' with your actual Discord IDs from VS Code
+INSERT INTO public.settings ("settingKey", "settingValue", "description") VALUES
+('role_mod_id', '000000000000000000', 'The ID of the Moderator role allowed to use /strike and /verify'),
+('role_admin_id', '000000000000000000', 'The ID of the Admin role for high-level commands'),
+('chan_mod_logs', '000000000000000000', 'Channel where Themis posts strike and ban logs'),
+('chan_verify_logs', '000000000000000000', 'Channel where Charon posts successful verification notices'),
+('chan_ai_alerts', '000000000000000000', 'Channel where Argus pings staff about suspicious activity'),
+('max_strikes_before_ban', '3', 'How many strikes a member can get before Themis auto-bans')
+ON CONFLICT ("settingKey") DO NOTHING;
