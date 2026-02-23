@@ -2,85 +2,64 @@
 const { Client, IntentsBitField, ActivityType, Collection } = require('discord.js'); // Added Collection here
 const fs = require('node:fs'); 
 const path = require('node:path'); 
-const db = require('./db'); 
-require('dotenv').config();
+const db = require('./db'); //Connecting to the database
+const { setDefaultAutoSelectFamily } = require('node:net');
 
-// 2. Intents
-const client = new Client({
-    intents: [
-        IntentsBitField.Flags.Guilds,
-        IntentsBitField.Flags.GuildMembers,
+//2. Warapping everything in an initialization
+function initCharon() {
+    const clent = new Client({
+        intents: [
+            IntentsBitField.Flag.Guilds,
+        IntentsBitField.Flags.GuildMessages,
         IntentsBitField.Flags.GuildMessages
-    ]
-});
+        ]
+    });
+    //The shelf of commands that only Charon can use
+    client.commands = new Collection();
 
-// 3. Command Handler (The "Cogs" Loader)
-client.commands = new Collection();
+    //This makes it so charon can only add commands to its shelf that have been tagged for it
+    const commandsPath = path.join(__dirname, 'commands', 'charonTheFerryman');
 
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+    //A check to make sure the folder exists so charon doesn't crash
+    if(fs.existsSync(commandsPath)) {
+        const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js')); //Makes sure there is a filter so it only takes javascript files
 
-for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
-    
-    // Safety check: ensure the file has the required properties
-    if ('data' in command && 'execute' in command) {
-        client.commands.set(command.data.name, command);
-    } else {
-        console.log(`[WARNING] The command at ${filePath} is missing "data" or "execute".`);
-    }
-}
+        for(const file of commandFiles){
+            const filePath = path.join(commandsPath, file);
+            const command = require(filePath);
 
-// 4. On Ready Event
-client.once('ready', async () => {
-    console.log(`✅ Charon is online as ${client.user.tag}`);
-
-    const statuses = ["Verifying souls", "Guiding spirits", "Ferrying users"];
-    
-    const updateStatus = () => {
-        const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-        client.user.setActivity(randomStatus, { type: ActivityType.Playing });
-    };
-
-    updateStatus();
-    setInterval(updateStatus, 600000); 
-});
-
-// 5. Slash Command Handling (The "Gear Turner")
-client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isChatInputCommand()) return;
-    
-    const command = client.commands.get(interaction.commandName);
-
-    if (!command) {
-        console.error(`No command matching ${interaction.commandName} was found.`);
-        return;
-    }
-
-    try {
-        // This executes the logic inside your separate command files
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        const errorMessage = { content: '⚠️ The ferry stalled... an error occurred!', ephemeral: true };
-        
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp(errorMessage);
-        } else {
-            await interaction.reply(errorMessage);
+            if('data' in command && 'execute' in command) {
+                client.commands.set(command.data.name, command);
+            }
         }
     }
-});
 
-// 6. Graceful Shutdown
-const handleShutdown = async () => {
-    console.log("\n🔴 Shutting down Charon...");
-    client.destroy(); 
-    process.exit(0);
-};
+    //Events
+    client.once('ready', () => {
+        console.log(`Charon Hub: Online as ${client.user.tag}`); //Make this cooler
 
-process.on('SIGINT', handleShutdown);
-process.on('SIGTERM', handleShutdown);
+        const statuses = ["Verifying soulds", "Guiding Spirits", "Ferrying users"];
+        const updateStatus = () => {
+            const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+            client.user.setActivity(randomStatus, {type: ActivityType.Watching});
+        };
+        updateStatus();
+        setInterval(updateStatus, 600000);
+    });
 
-client.login(process.env.TOKEN_CHARON);
+    client.on('interactionCreate', async (interaction) => {
+        if(!interaction.isChatInputCommand()) return;
+
+        try {
+            await command.execute(interaction);
+        } catch (error) {
+            console.error(error);
+            const msg = {content: '⚠️ The ferry stalled... an error occurred!', ephemeral: true};
+            interaction.replied || interaction.deferred ? await interaction.followUp(msg) : await interaction.reply(msg);
+        }
+    });
+
+    //Return client back to Olympus
+    return client;
+    
+}
