@@ -3,6 +3,7 @@ const db = require('../db'); //Connecting to database
 
 module.exports = {
     //Building the /verify command
+    owner: 'charonTheFerryman', //Making sure only charon can use this
     data: new SlashCommandBuilder()
         .setName('verify')
         .setDescription('Verify a user by removing Unverified and adding standard roles.')
