@@ -1,5 +1,7 @@
 // 1. Imports
-const { Client, IntentsBitField, EmbedBuilder, ActivityType } = require('discord.js');
+const { Client, IntentsBitField, EmbedBuilder, ActivityType } = require('discord.js'); //How imports look in discord.js
+const fs = require('node:fs'); // Built-in tool to read files
+const path = require('node:path'); // Built-in tool to handle folder paths
 const db = require('./db'); // Our shared DB connection
 require('dotenv').config();
 
@@ -27,6 +29,25 @@ const ROLES_TO_ADD = [
     "1077368412524785835"  // Comm System
 ];
 
+//Create a Collection to store our cogs/commands
+client.commands = new Collection();
+
+//Read the commands folder
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const command = require(filePath);
+    
+    // Set a new item in the Collection
+    // Key = command name, Value = the exported module
+    if ('data' in command && 'execute' in command) {
+        client.commands.set(command.data.name, command);
+    }
+}
+
+
 // 4. On Ready Event (The "Status" and Login message)
 client.once('ready', async () => {
     console.log(`✅ Charon is online as ${client.user.tag}`);
@@ -49,53 +70,24 @@ client.once('ready', async () => {
 // 5. Slash Command Handling
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
+    
+    // We look for the command in our Collection
+    const command = client.commands.get(interaction.commandName);
 
-    const { commandName, options, guild, member: moderator } = interaction;
+    if (!command) {
+        console.error(`No command matching ${interaction.commandName} was found.`);
+        return;
+    }
 
-    if (commandName === 'verify') {
-        const targetMember = options.getMember('member');
-
-        // Check for Moderator Role
-        if (!moderator.roles.cache.has(MOD_ROLE_ID)) {
-            await interaction.reply({ content: "❌ You must be a moderator to use this.", ephemeral: true });
-            
-            // Log unauthorized attempt to Discord
-            const logChannel = guild.channels.cache.get(MOD_LOG_CHANNEL_ID);
-            if (logChannel) {
-                logChannel.send(`⚠️ Unauthorized verify attempt by ${moderator.user.tag}`);
-            }
-            return;
-        }
-
-        // Defer reply (like Python's await interaction.response.defer)
-        await interaction.deferReply();
-
-        try {
-            // Remove Unverified role
-            await targetMember.roles.remove(UNVERIFIED_ROLE_ID);
-            // Add all the new roles
-            await targetMember.roles.add(ROLES_TO_ADD);
-
-            // 🏛️ DATABASE LOGGING (The Olympus way)
-            const sql = `
-                INSERT INTO charon."verficationLogs" ("discordID", "verifiedBy")
-                VALUES ($1, $2)
-                ON CONFLICT ("discordID") DO UPDATE SET "verifiedAt" = NOW();
-            `;
-            await db.query(sql, [targetMember.id, moderator.id]);
-
-            // Discord Logging
-            const logChannel = guild.channels.cache.get(MOD_LOG_CHANNEL_ID);
-            if (logChannel) {
-                logChannel.send(`✅ **${targetMember.user.tag}** verified by **${moderator.user.tag}**.`);
-            }
-
-            // Final message to user
-            await interaction.editReply(`🎉 Congratulations, ${targetMember}! Head to <id:customize> and enjoy the Lounge!`);
-
-        } catch (error) {
-            console.error(error);
-            await interaction.editReply("❌ Failed to manage roles. Check my permissions!");
+    try {
+        // This runs the "execute" function inside your verify.js or unverify.js
+        await command.execute(interaction);
+    } catch (error) {
+        console.error(error);
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+        } else {
+            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
         }
     }
 });
