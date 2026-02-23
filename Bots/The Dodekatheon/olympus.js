@@ -1,61 +1,51 @@
-const { Client, IntentsBitField, Collection } = require('discord.js');
-const db = require('./db');
+const { Client, IntentsBitField } = require('discord.js');
+const { applyJustice } = require('./themisTheEmbodimentOfJustice'); // Import Themis
+const { trackActivity } = require('./argusTheAllSeeing'); // Import Argus
 require('dotenv').config();
 
-// --- 1. THE PRESENCES (The Gods) ---
+// --- 1. DEFINE THE PRESENCES ---
 
-// Charon: The Ferryman (Verification)
-const charon = new Client({ intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers] });
-
-// Themis: The Judge (Surveillance)
-const themis = new Client({ 
-    intents: [
-        IntentsBitField.Flags.Guilds, 
-        IntentsBitField.Flags.GuildMessages, 
-        IntentsBitField.Flags.MessageContent 
-    ] 
+// Charon (The Ferryman)
+const charon = new Client({
+    intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers]
 });
 
-// --- 2. SHARED LOGIC (The Logging Engine) ---
+// Themis (The Judge)
+const themis = new Client({
+    intents: [
+        IntentsBitField.Flags.Guilds,
+        IntentsBitField.Flags.GuildMessages,
+        IntentsBitField.Flags.MessageContent
+    ]
+});
 
-// This function handles Argus's data collection and Themis's alerts
-async function processMessage(message) {
+// Argus (JS Component): Handles Data Entry
+const argus = new Client({
+    intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.MessageContent]
+});
+
+// --- 2. ASSIGN THE WORK ---
+
+// --- 2. INDIVIDUAL DUTIES ---
+
+// ARGUS: Listens to chat ONLY to track activity
+argus.on('messageCreate', async (message) => {
     if (message.author.bot || !message.guild) return;
+    await trackActivity(message); 
+});
 
-    try {
-        // A. ARGUS: Log activity to the database for the Python script
-        const argusSql = `
-            INSERT INTO argus."watchlist" ("discordID", "numOfMessagesSent", "lastMessageAt")
-            VALUES ($1, 1, NOW())
-            ON CONFLICT ("discordID") 
-            DO UPDATE SET "numOfMessagesSent" = argus."watchlist"."numOfMessagesSent" + 1, "lastMessageAt" = NOW();
-        `;
-        await db.query(argusSql, [message.author.id]);
-
-        // B. THEMIS: Check for flagged users
-        const themisSql = `
-            SELECT "watchlistStatus" FROM charon."verficationLogs" 
-            WHERE "discord_id" = $1 AND "watchlistStatus" = TRUE LIMIT 1
-        `;
-        const res = await db.query(themisSql, [message.author.id]);
-
-        if (res.rows.length > 0) {
-            console.log(`🚩 THEMIS ALERT: Watchlisted user ${message.author.tag} is active.`);
-        }
-    } catch (err) {
-        console.error("Olympus Engine Error:", err);
-    }
-}
-
-// --- 3. EVENT ASSIGNMENT ---
-
-// Only Themis needs to listen to messages to track them
-themis.on('messageCreate', (message) => processMessage(message));
+// THEMIS: Listens to chat ONLY to check the watchlist
+themis.on('messageCreate', async (message) => {
+    if (message.author.bot || !message.guild) return;
+    await applyJustice(message);
+});
 
 charon.once('ready', () => console.log("🛶 Charon has arrived at the Styx."));
 themis.once('ready', () => console.log("⚖️ Themis has taken her seat."));
+argus.once('ready', () => console.log("👁️ Argus: Online (Watching currents)"));
 
 // --- 4. THE LOGIN ---
 
 charon.login(process.env.TOKEN_CHARON);
 themis.login(process.env.TOKEN_THEMIS);
+argus.login(process.env.TOKEN_ARGUS);
