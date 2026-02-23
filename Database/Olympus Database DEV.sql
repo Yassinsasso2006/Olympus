@@ -166,8 +166,9 @@ CREATE TABLE "argus"."incidentReports"(
 );
 
 CREATE TABLE "argus"."watchlist"(
-    "discordID" BIGINT NOT NULL PRIMARY KEY, --The member discord ID that are on the watchlist and that need to be monitored
+    "discordID" VARCHAR(30) NOT NULL PRIMARY KEY, --The member discord ID that are on the watchlist and that need to be monitored
     "numOfMessagesSent" BIGINT NOT NULL, --How many messages did this member send to track if this member is active or not.
+    "lastMessageAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, -- Track recency of the last message
     "archivedAt" TIMESTAMP(0) NULL -- Removes someone from the active watchlist
 );
 
