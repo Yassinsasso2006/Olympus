@@ -25,10 +25,12 @@ CREATE SCHEMA IF NOT EXISTS "hermes"; -- Adding a "hermes" schema to the databas
 -- 2. CHARON (Verification)
 -- ==========================================
 CREATE TABLE "charon"."verficationLogs"(
-    "discord_id" BIGINT NOT NULL PRIMARY KEY, --Member's discord ID
-    "gatePassedAt" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, --The timestamp that the member was verified at
+    "penalty_id" BIGSERIAL PRIMARY KEY, --A unique identifer for every event
+    "discord_id" VARCHAR(30) NOT NULL PRIMARY KEY, --Member's discord ID
+    "gatePassedAt" TIMESTAMP(0) WITH TIME ZONE NOT NULL, --The timestamp that the member was verified at
     "invitiedBy" BIGINT NOT NULL, --Which mod verified him
     "watchlistStatus" BOOLEAN NOT NULL, --Is this member suspicious, should they be put on a watchlist?
+    "isVerify" BOOLEAN NOT NULL --0 if unverify and 1 if verify
     "archivedAt" TIMESTAMP(0) NULL -- Soft delete for verification records
 );
 
