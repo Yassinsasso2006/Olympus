@@ -62,7 +62,7 @@ CREATE TABLE "themis"."evidenceLinks"(
     "penaltyID" BIGINT NOT NULL, --The penalty this link belongs to
     "link" TEXT NOT NULL, --The single URL/link of the discord embeded images
     "uploadedBy" BIGINT NOT NULL, --Tracks exactly which mod provided this specific proof
-    "createdAt" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, -- When this proof was added
+    "createdAt" TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, -- When this proof was added
     "archivedAt" TIMESTAMP(0) NULL -- Archives specific evidence
 );
 
@@ -72,7 +72,7 @@ CREATE TABLE "themis"."evidenceLinks"(
 CREATE TABLE "public"."members"(
     "discordID" BIGINT NOT NULL PRIMARY KEY, --The member's discord ID
     "memberUsername" TEXT NOT NULL, --The member's username
-    "firstSeen" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, --When the member joined the server
+    "firstSeen" TIMESTAMP(0) WITH TIME ZONE NOT NULL, --When the member joined the server
     "timeLeft" BIGINT NULL, --When the member left the server
     "archivedAt" TIMESTAMP(0) NULL -- Marks a member as "Left" or "Inactive"
 );
@@ -89,8 +89,8 @@ CREATE TABLE "public"."staff"(
             "rank" IN('Admin', 'Trial', 'Senior', 'Full Fledged Mod')
         ) NOT NULL,
     "isOnTrial" BOOLEAN NOT NULL, --A boolean check if the staff member is a trail mod or not
-    "trailStartAt" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, --If they're a trail mod, when did their trail start?
-    "promotedAt" TIMESTAMP(0) WITHOUT TIME ZONE NULL, --When where they promoted from trail mod into a fully fledged mod
+    "trailStartAt" TIMESTAMP(0) WITH TIME ZONE NOT NULL, --If they're a trail mod, when did their trail start?
+    "promotedAt" TIMESTAMP(0) WITH TIME ZONE NULL, --When where they promoted from trail mod into a fully fledged mod
     "archivedAt" TIMESTAMP(0) NULL -- Archives staff members (The "Hall of Heroes" logic)
 );
 
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS "public"."settings" (
     "settingKey" TEXT PRIMARY KEY, --The variable name that needs to be stored
     "settingValue" TEXT NOT NULL,  --The variable's value
     "description" TEXT, --A text description that explains this variable and it's value
-    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP --When was the last time this variable's value was updated
+    "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP --When was the last time this variable's value was updated
 );
 
 -- ==========================================
@@ -149,7 +149,7 @@ CREATE TABLE "athena"."ledger"(
         ("type" IN('Quest', 'Penalty', 'Manual', 'Auto-Deduction')) NOT NULL,
     "reason" TEXT NOT NULL, --The reason for this record
     "issuedBy" BIGINT DEFAULT 0, --Who issued this record? [0 represents 'The System']
-    "createdAt" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, --When was this record created?
+    "createdAt" TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, --When was this record created?
     "archivedAt" TIMESTAMP(0) NULL -- Archives specific bank transactions
 );
 
