@@ -63,3 +63,5 @@ function initCharon() {
     return client;
     
 }
+
+module.exports = {initCharon};
