@@ -2,6 +2,7 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const db = require('../db');
 
 module.exports = {
+    owner: 'themisTheEmbodimentOfJustice',
     data: new SlashCommandBuilder()
         .setName('watchlist')
         .setDescription('Add or remove a user from the watchlist')
