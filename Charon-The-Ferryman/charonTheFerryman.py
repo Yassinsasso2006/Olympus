@@ -63,18 +63,22 @@ async def on_ready():
         print(f"❌ Failed to sync slash commands: {e}")
 
 
-# Handle graceful shutdown on Ctrl+C or termination
-def setup_shutdown_handlers():
-    loop = asyncio.get_event_loop()
+# Remove the old standalone function and setup_shutdown_handlers() call.
+# Instead, define a setup_hook for the bot like this:
+
+async def custom_setup_hook():
+    loop = asyncio.get_running_loop()
     for sig in (signal.SIGINT, signal.SIGTERM):
         try:
+            # We use a lambda to cleanly schedule the shutdown coroutine on the running loop
             loop.add_signal_handler(sig, lambda: asyncio.create_task(shutdown()))
         except NotImplementedError:
-            # Windows fallback: signal only works with SIGINT
+            # Windows fallback
             if sig == signal.SIGINT:
                 signal.signal(signal.SIGINT, lambda sig, frame: asyncio.create_task(shutdown()))
 
-setup_shutdown_handlers()
+# Assign the hook to your bot instance
+bot.setup_hook = custom_setup_hook
 
 
 # Slash command: /verify @member
