@@ -4,12 +4,15 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import os
 import random
-import signal #This is used to handle graceful shutdowns
-import sys #This too
-import asyncio  # Import asyncio for async operations
+import signal  # Used to handle graceful shutdowns
+import sys
+import asyncio  # Async operations
+from pathlib import Path
 
-# Load bot token from .env
-load_dotenv()
+# Load bot token from .env using an absolute path relative to this script
+script_dir = Path(__file__).resolve().parent
+dotenv_path = script_dir / ".env"
+load_dotenv(dotenv_path=dotenv_path)
 TOKEN = os.getenv("TOKEN")
 
 # Intents
@@ -28,24 +31,40 @@ async def shutdown():
     await bot.close()
     print("✅ Shutdown complete.")
 
+# Define a setup_hook to safely assign shutdown handlers once the loop is running
+async def custom_setup_hook():
+    loop = asyncio.get_running_loop()
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        try:
+            loop.add_signal_handler(sig, lambda: asyncio.create_task(shutdown()))
+        except NotImplementedError:
+            # Windows fallback
+            if sig == signal.SIGINT:
+                signal.signal(signal.SIGINT, lambda sig, frame: asyncio.create_task(shutdown()))
 
+bot.setup_hook = custom_setup_hook
 tree = bot.tree  # slash command handler
 
-# Role configuration
-# Variable intialization
+# Role configuration IDs
 UNVERIFIED_ROLE_NAME = 1059289964124323880
 ROLES_TO_ADD = [
-    1059289967827894333, #Verified
-    1064171885081919518, #Peasant of Prose(Lvl. 1)
-    1077367546740736161, #《──────Lounge ID──────》
-    1077367715607609415, #《──────Writing Badge──────》
-    1077367888542961675, #《──────Spy Database──────》
-    1077368081506119680, #《──────Quests──────》
-    1077368229376307252, #《────Summoning Spells────》
-   1077368412524785835 #《──────Comm System──────》
+    1059289967827894333, # Verified
+    1064171885081919518, # Peasant of Prose(Lvl. 1)
+    1077367546740736161, # 《──────Lounge ID──────》
+    1077367715607609415, # 《──────Writing Badge──────》
+    1077367888542961675, # 《──────Spy Database──────》
+    1077368081506119680, # 《──────Quests──────》
+    1077368229376307252, # 《────Summoning Spells────》
+    1077368412524785835  # 《──────Comm System──────》
 ]
 
 MOD_LOG_CHANNEL_ID = 1393736874069327963
+
+# Authorized Moderator Roles allowed to run verification/unverification
+ALLOWED_MOD_ROLES = [
+    1073396088603693167, # Original Moderator / Council role
+    1465334314332852367  # General Chat Moderator role
+]
 
 
 @bot.event
@@ -63,40 +82,23 @@ async def on_ready():
         print(f"❌ Failed to sync slash commands: {e}")
 
 
-# Remove the old standalone function and setup_shutdown_handlers() call.
-# Instead, define a setup_hook for the bot like this:
-
-async def custom_setup_hook():
-    loop = asyncio.get_running_loop()
-    for sig in (signal.SIGINT, signal.SIGTERM):
-        try:
-            # We use a lambda to cleanly schedule the shutdown coroutine on the running loop
-            loop.add_signal_handler(sig, lambda: asyncio.create_task(shutdown()))
-        except NotImplementedError:
-            # Windows fallback
-            if sig == signal.SIGINT:
-                signal.signal(signal.SIGINT, lambda sig, frame: asyncio.create_task(shutdown()))
-
-# Assign the hook to your bot instance
-bot.setup_hook = custom_setup_hook
-
-
 # Slash command: /verify @member
 @tree.command(name="verify", description="Verify a user by removing 'Unverified' and adding standard roles.")
 @app_commands.describe(member="The member to verify")
 async def verify_user(interaction: discord.Interaction, member: discord.Member):
     guild = interaction.guild
 
-    required_role = interaction.guild.get_role(1073396088603693167)  # Moderator role
+    # Check if user has at least one authorized mod role
+    has_permission = any(role.id in ALLOWED_MOD_ROLES for role in interaction.user.roles)
 
-    if required_role not in interaction.user.roles:
+    if not has_permission:
         await interaction.response.send_message("❌ You must be a moderator to use this command.", ephemeral=True)
 
-        # ✅ Log the failed attempt
+        # Log the failed attempt
         log_channel = interaction.guild.get_channel(MOD_LOG_CHANNEL_ID)
         if log_channel:
             await log_channel.send(
-                f"❌ Unauthorized attempt: {interaction.user.mention} (ID: {interaction.user.id}) tried to use `/verify` on {member.display_name}, but lacks the required moderator role. <@&1073396088603693167> be careful!"
+                f"❌ Unauthorized attempt: {interaction.user.mention} (ID: {interaction.user.id}) tried to use `/verify` on {member.display_name}, but lacks a required moderator role. <@&1073396088603693167> <@&1465334314332852367> be careful!"
             )
         return
 
@@ -130,35 +132,29 @@ async def verify_user(interaction: discord.Interaction, member: discord.Member):
                 f"🛠️ {interaction.user.display_name} verified {member.mention} using `/verify`."
             )
 
-
-        # ✅ REQUIRED: send a follow-up message to complete the interaction
+        # Send a follow-up message to complete the interaction
         await interaction.followup.send(
-        f"🎉 Congratulations, {member.mention}! Please head over to <id:customize> and collect your roles. Be sure you have followed the <id:guide> to fulfill your journey of initiation into the Lounge! Now, sit back, relax and enjoy! ❤️"
+            f"🎉 Congratulations, {member.mention}! Please head over to <id:customize> and collect your roles. Be sure you have followed the <id:guide> to fulfill your journey of initiation into the Lounge! Now, sit back, relax and enjoy! ❤️"
         )
 
     except discord.Forbidden:
-        await interaction.followup.send(
-            "❌ I don’t have permission to manage those roles.", ephemeral=True
-        )
+        await interaction.followup.send("❌ I don’t have permission to manage those roles.", ephemeral=True)
     except Exception as e:
-        await interaction.followup.send(
-            f"⚠️ Something went wrong: {e}", ephemeral=True
-        )
-
-    except discord.Forbidden:
-        await interaction.followup.send("❌ I don’t have permission to manage those roles.")
-    except Exception as e:
-        await interaction.followup.send(f"⚠️ Something went wrong: {e}")
-
-
+        await interaction.followup.send(f"⚠️ Something went wrong: {e}", ephemeral=True)
 
 
 # Slash command: /unverify @member
-@app_commands.checks.has_role(1073396088603693167)  #The Council of Elders role ID
 @tree.command(name="unverify", description="Remove verified roles and reassign 'Unverified' role.")
 @app_commands.describe(member="The member to unverify")
 async def unverify_user(interaction: discord.Interaction, member: discord.Member):
     guild = interaction.guild
+
+    # Check if user has at least one authorized mod role
+    has_permission = any(role.id in ALLOWED_MOD_ROLES for role in interaction.user.roles)
+
+    if not has_permission:
+        await interaction.response.send_message("❌ You do not have the required role to use this command.", ephemeral=True)
+        return
 
     if not interaction.user.guild_permissions.manage_roles:
         await interaction.response.send_message("❌ You don't have permission to unverify members.", ephemeral=True)
@@ -186,8 +182,6 @@ async def unverify_user(interaction: discord.Interaction, member: discord.Member
             await log_channel.send(
                 f"🛑 {interaction.user.display_name} unverified {member.mention} using `/unverify`."
             )
-            
-
 
     except discord.Forbidden:
         await interaction.followup.send("❌ I don’t have permission to manage those roles.")
@@ -196,4 +190,3 @@ async def unverify_user(interaction: discord.Interaction, member: discord.Member
 
 # Run the bot
 bot.run(TOKEN)
-
