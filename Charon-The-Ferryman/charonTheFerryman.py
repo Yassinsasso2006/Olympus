@@ -102,9 +102,6 @@ async def verify_user(interaction: discord.Interaction, member: discord.Member):
             )
         return
 
-    if not interaction.user.guild_permissions.manage_roles:
-        await interaction.response.send_message("❌ You don't have permission to verify members.", ephemeral=True)
-        return
 
     await interaction.response.defer(ephemeral=False)
 
@@ -154,10 +151,6 @@ async def unverify_user(interaction: discord.Interaction, member: discord.Member
 
     if not has_permission:
         await interaction.response.send_message("❌ You do not have the required role to use this command.", ephemeral=True)
-        return
-
-    if not interaction.user.guild_permissions.manage_roles:
-        await interaction.response.send_message("❌ You don't have permission to unverify members.", ephemeral=True)
         return
 
     await interaction.response.defer(ephemeral=False)
