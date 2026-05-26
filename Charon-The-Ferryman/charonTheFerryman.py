@@ -52,7 +52,7 @@ ROLES_TO_ADD = [
     1064171885081919518, # Peasant of Prose(Lvl. 1)
     1077367546740736161, # 《──────Lounge ID──────》
     1077367715607609415, # 《──────Writing Badge──────》
-    1077367888542961675, # 《──────Spy Database──────》
+    107736888542961675, # 《──────Spy Database──────》
     1077368081506119680, # 《──────Quests──────》
     1077368229376307252, # 《────Summoning Spells────》
     1077368412524785835  # 《──────Comm System──────》
@@ -86,13 +86,16 @@ async def on_ready():
 @tree.command(name="verify", description="Verify a user by removing 'Unverified' and adding standard roles.")
 @app_commands.describe(member="The member to verify")
 async def verify_user(interaction: discord.Interaction, member: discord.Member):
+    # Defer immediately so the interaction window doesn't close or time out
+    await interaction.response.defer(ephemeral=False)
+
     guild = interaction.guild
 
     # Check if user has at least one authorized mod role
     has_permission = any(role.id in ALLOWED_MOD_ROLES for role in interaction.user.roles)
 
     if not has_permission:
-        await interaction.response.send_message("❌ You must be a moderator to use this command.", ephemeral=True)
+        await interaction.followup.send("❌ You must be a moderator to use this command.", ephemeral=True)
 
         # Log the failed attempt
         log_channel = interaction.guild.get_channel(MOD_LOG_CHANNEL_ID)
@@ -101,9 +104,6 @@ async def verify_user(interaction: discord.Interaction, member: discord.Member):
                 f"❌ Unauthorized attempt: {interaction.user.mention} (ID: {interaction.user.id}) tried to use `/verify` on {member.display_name}, but lacks a required moderator role. <@&1073396088603693167> <@&1465334314332852367> be careful!"
             )
         return
-
-
-    await interaction.response.defer(ephemeral=False)
 
     unverified_role = guild.get_role(UNVERIFIED_ROLE_NAME)
     roles_to_add = [guild.get_role(role_id) for role_id in ROLES_TO_ADD]
@@ -140,20 +140,33 @@ async def verify_user(interaction: discord.Interaction, member: discord.Member):
         await interaction.followup.send(f"⚠️ Something went wrong: {e}", ephemeral=True)
 
 
+# Error Handler for /verify to catch invalid usernames safely
+@verify_user.error
+async def verify_user_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.errors.TransformerError):
+        error_msg = "❌ Could not find that member. Please make sure to mention them or select them from the Discord user drop-down list!"
+        if interaction.response.is_done():
+            await interaction.followup.send(error_msg, ephemeral=True)
+        else:
+            await interaction.response.send_message(error_msg, ephemeral=True)
+    else:
+        print(f"An unexpected error occurred in /verify: {error}")
+
+
 # Slash command: /unverify @member
 @tree.command(name="unverify", description="Remove verified roles and reassign 'Unverified' role.")
 @app_commands.describe(member="The member to unverify")
 async def unverify_user(interaction: discord.Interaction, member: discord.Member):
+    await interaction.response.defer(ephemeral=False)
+
     guild = interaction.guild
 
     # Check if user has at least one authorized mod role
     has_permission = any(role.id in ALLOWED_MOD_ROLES for role in interaction.user.roles)
 
     if not has_permission:
-        await interaction.response.send_message("❌ You do not have the required role to use this command.", ephemeral=True)
+        await interaction.followup.send("❌ You do not have the required role to use this command.", ephemeral=True)
         return
-
-    await interaction.response.defer(ephemeral=False)
 
     unverified_role = guild.get_role(UNVERIFIED_ROLE_NAME)
     roles_to_remove = [guild.get_role(role_id) for role_id in ROLES_TO_ADD]
