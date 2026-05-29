@@ -52,7 +52,7 @@ ROLES_TO_ADD = [
     1064171885081919518, # Peasant of Prose(Lvl. 1)
     1077367546740736161, # 《──────Lounge ID──────》
     1077367715607609415, # 《──────Writing Badge──────》
-    107736888542961675, # 《──────Spy Database──────》
+    107736888542961675,  # 《──────Spy Database──────》
     1077368081506119680, # 《──────Quests──────》
     1077368229376307252, # 《────Summoning Spells────》
     1077368412524785835  # 《──────Comm System──────》
@@ -86,7 +86,7 @@ async def on_ready():
 @tree.command(name="verify", description="Verify a user by removing 'Unverified' and adding standard roles.")
 @app_commands.describe(member="The member to verify")
 async def verify_user(interaction: discord.Interaction, member: discord.Member):
-    # Defer immediately so the interaction window doesn't close or time out
+    # Defer immediately using followup workflow to prevent 3-second timeouts completely
     await interaction.response.defer(ephemeral=False)
 
     guild = interaction.guild
@@ -135,20 +135,23 @@ async def verify_user(interaction: discord.Interaction, member: discord.Member):
         )
 
     except discord.Forbidden:
-        await interaction.followup.send("❌ I don’t have permission to manage those roles.", ephemeral=True)
+        await interaction.followup.send("❌ I don’t have permission to manage those roles.")
     except Exception as e:
-        await interaction.followup.send(f"⚠️ Something went wrong: {e}", ephemeral=True)
+        await interaction.followup.send(f"⚠️ Something went wrong: {e}")
 
 
-# Error Handler for /verify to catch invalid usernames safely
+# Global Error Handler for /verify to catch invalid usernames before the command runs
 @verify_user.error
 async def verify_user_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
     if isinstance(error, app_commands.errors.TransformerError):
         error_msg = "❌ Could not find that member. Please make sure to mention them or select them from the Discord user drop-down list!"
-        if interaction.response.is_done():
-            await interaction.followup.send(error_msg, ephemeral=True)
-        else:
-            await interaction.response.send_message(error_msg, ephemeral=True)
+        try:
+            if not interaction.response.is_done():
+                await interaction.response.send_message(error_msg, ephemeral=True)
+            else:
+                await interaction.followup.send(error_msg, ephemeral=True)
+        except Exception:
+            pass
     else:
         print(f"An unexpected error occurred in /verify: {error}")
 
